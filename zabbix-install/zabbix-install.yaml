@@ -1,6 +1,8 @@
 ---
 - name: Test connectivity to infrastructure node
   hosts: infrastructurenodes
+  collections:
+    - community.kubernetes
   module_defaults:
     group/k8s:
       host: https://api.ocp-by-awx.cp.fyre.ibm.com:6443
