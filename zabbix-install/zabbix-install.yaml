@@ -2,7 +2,7 @@
 - name: Test connectivity to infrastructure node
   hosts: infrastructurenodes
   module_defaults:
-    group/kubernetes.core.k8s:
+    group/k8s:
       host: https://api.ocp-by-awx.cp.fyre.ibm.com:6443
       validate_certs: false
   gather_facts: true
@@ -22,7 +22,7 @@
         var: kubeadmin_password
 
     - name: Log in (obtain access token)
-      kubernetes.core.k8s_auth:
+      k8s_auth:
         host: https://api.ocp-by-awx.cp.fyre.ibm.com:6443
         username: kubeadmin
         password: "{{ kubeadmin_password }}"
@@ -30,7 +30,7 @@
       register: k8s_auth_results
 
     - name: Get a list of all pods from any namespace
-      kubernetes.core.k8s_info:
+      k8s_info:
         api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
         kind: Pod
         namespace: zabbix
