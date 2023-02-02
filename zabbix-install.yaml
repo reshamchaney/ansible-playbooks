@@ -1,0 +1,38 @@
+---
+- name: Test connectivity to infrastructure node
+  hosts: infrastructurenodes
+  module_defaults:
+    group/kubernetes.core.k8s:
+      host: https://api.ocp-by-awx.cp.fyre.ibm.com:6443
+      validate_certs: false
+  gather_facts: true
+  tasks:
+    - name: Ping test
+      ping:
+    # - name: Check if oc client exists
+    #   shell: oc version
+    #   register: oc_exists
+    - name: Include vault
+      include_vars: passwords.yaml
+    # - name: Login to openshift
+    #   shell: oc login -u apikey -p 9DbDVvNe9mdTB2CUf3sjffmWG5TRfIYkoEOKfL_WMwdF --server=https://c101-e.us-east.containers.cloud.ibm.com:32745
+    # - name: List pods
+    - name: Print Variable
+      ansible.builtin.debug:
+        var: kubeadmin_password
+
+    - name: Log in (obtain access token)
+      kubernetes.core.k8s_auth:
+        host: https://api.ocp-by-awx.cp.fyre.ibm.com:6443
+        username: kubeadmin
+        password: "{{ kubeadmin_password }}"
+        validate_certs: false
+      register: k8s_auth_results
+
+    - name: Get a list of all pods from any namespace
+      kubernetes.core.k8s_info:
+        api_key: "{{ k8s_auth_results.k8s_auth.api_key }}"
+        kind: Pod
+        namespace: zabbix
+        validate_certs: false
+      register: pod_list

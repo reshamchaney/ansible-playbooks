@@ -1,0 +1,2 @@
+[infrastructurenodes]
+api.ocp-by-awx.cp.fyre.ibm.com ansible_ssh_user=root
