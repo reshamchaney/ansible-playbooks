@@ -1,8 +1,8 @@
 ---
 - name: Test connectivity to infrastructure node
   hosts: infrastructurenodes
-  collections:
-    - community.kubernetes
+  # collections:
+  #   - community.kubernetes
   module_defaults:
     group/k8s:
       host: https://api.ocp-by-awx.cp.fyre.ibm.com:6443
@@ -22,6 +22,26 @@
     - name: Print Variable
       ansible.builtin.debug:
         var: kubeadmin_password
+
+    - name: install python
+      yum:
+        name: python3
+        state: present
+        update_cache: true
+    - name: setting facts
+      set_fact:
+        ansible_python_interpreter: /usr/bin/python3.6
+
+    - name: install pre-requisites
+      become: true
+      pip:
+        name:
+          - requests
+          - requests-oauthlib
+          - urllib3
+          - openshift
+          - pyyaml
+          - kubernetes
 
     - name: Log in (obtain access token)
       k8s_auth:
